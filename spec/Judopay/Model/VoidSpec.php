@@ -4,7 +4,7 @@ namespace spec\Judopay\Model;
 
 use Tests\Builders\VoidTransactionBuilder;
 
-class VoidSpec extends ModelObjectBehavior
+class VoidTransactionSpec extends ModelObjectBehavior
 {
     public function it_is_initializable()
     {
@@ -18,7 +18,7 @@ class VoidSpec extends ModelObjectBehavior
         );
 
         $modelBuilder = new VoidTransactionBuilder();
-        /** @var \Judopay\Model\VoidTransactionBuilder|VoidSpec $this */
+        /** @var \Judopay\Model\VoidTransactionBuilder|VoidTransactionSpec $this */
         $this->setAttributeValues(
             $modelBuilder->compile()->getAttributeValues()
         );
