@@ -14,7 +14,7 @@ class VoidSpec extends ModelObjectBehavior
     public function it_should_create_a_new_refund()
     {
         $this->beConstructedWith(
-            $this->concoctRequest('transactions/void.json')
+            $this->concoctRequest('transactions/voidtransaction.json')
         );
 
         $modelBuilder = new VoidTransactionBuilder();
