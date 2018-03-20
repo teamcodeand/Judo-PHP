@@ -18,7 +18,7 @@ class VoidTransactionSpec extends ModelObjectBehavior
         );
 
         $modelBuilder = new VoidTransactionBuilder();
-        /** @var \Judopay\Model\VoidTransactionBuilder|VoidTransactionSpec $this */
+        /** @var \Judopay\Model\VoidTransaction|VoidTransactionSpec $this */
         $this->setAttributeValues(
             $modelBuilder->compile()->getAttributeValues()
         );
