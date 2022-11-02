@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Base;
+namespace Tests;
 
 use GuzzleHttp\Exception\BadResponseException;
 use Judopay\Exception\ApiException;
@@ -13,7 +13,7 @@ use Tests\Builders\ResumeThreeDSecureTwoBuilder;
 use Tests\Helpers\AssertionHelper;
 use Tests\Helpers\ConfigHelper;
 
-abstract class ThreeDSecureTwoTests extends PaymentTests
+class ThreeDSecureTwoTest extends TestCase
 {
     protected function getPaymentBuilder()
     {
@@ -30,7 +30,7 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         return new CompleteThreeDSecureTwoBuilder($receiptId);
     }
 
-    public function testPaymentWithThreedSecureTwoInvalidAuthenticationSource()
+    public function testPaymentWithThreeDSecureTwoInvalidAuthenticationSource()
     {
         // Build a threeDSecureTwo payment with an invalid attribute
         $threeDSecureTwo = array(
@@ -54,7 +54,7 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         }
     }
 
-    public function testPaymentWithThreedSecureTwoInvalidMethodCompletion()
+    public function testPaymentWithThreeDSecureTwoInvalidMethodCompletion()
     {
         // Build a threeDSecureTwo payment with an invalid attribute
         $threeDSecureTwo = array(
@@ -78,7 +78,7 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         }
     }
 
-    public function testPaymentWithThreedSecureTwoRequiresDeviceDetailsCheck()
+    public function testPaymentWithThreeDSecureTwoRequiresDeviceDetailsCheck()
     {
         // Build a threeDSecureTwo payment
         $threeDSecureTwo = array(
@@ -104,7 +104,7 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         AssertionHelper::assertRequiresThreeDSecureTwoDeviceDetails($paymentResult);
     }
 
-    public function testPaymentWithThreedSecureTwoResumeTransaction()
+    public function testPaymentWithThreeDSecureTwoResumeTransaction()
     {
         // Build a threeDSecureTwo payment
         $threeDSecureTwo = array(
@@ -149,7 +149,7 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         AssertionHelper::assertRequiresThreeDSecureTwoChallengeCompletion($resumeResult);
     }
 
-    public function testPaymentWithThreedSecureTwoResumeTransactionNoCv2()
+    public function testPaymentWithThreeDSecureTwoResumeTransactionNoCv2()
     {
         // Build a threeDSecureTwo payment
         $threeDSecureTwo = array(
@@ -195,10 +195,63 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
         }
     }
 
+    public function testPaymentWithThreeDSecureTwoResumeTransactionAccountDetails()
+    {
+        // Build a threeDSecureTwo payment
+        $threeDSecureTwo = array(
+            'authenticationSource'      => "Browser",
+            'methodNotificationUrl'     => "https://www.test.com",
+            'challengeNotificationUrl'  => "https://www.test.com"
+        );
+
+        $cardPayment = $this->getPaymentBuilder()
+            ->setType(CardPaymentBuilder::THREEDSTWO_VISA_CARD)
+            ->setThreeDSecureTwoFields($threeDSecureTwo)
+            ->build(ConfigHelper::getSafeChargeConfig());
+
+        $paymentResult = [];
+
+        try {
+            $paymentResult = $cardPayment->create();
+        } catch (BadResponseException $e) {
+            $this->fail('The request was expected to be successful.'); // We do not expect any exception
+        }
+
+        // We should have received a request for additional device data gathering
+        AssertionHelper::assertRequiresThreeDSecureTwoDeviceDetails($paymentResult);
+
+        $primaryAccountDetailsFields = array(
+            'name'          => 'John Smith',
+            'accountNumber' => '123456',
+            'dateOfBirth'   => '1980-01-01',
+            'postCode'      => 'EC2A 4DP',
+        );
+
+        // Build the Resume3d request for the payment after its device gathering happened
+        $resumeThreeDSecureTwo = $this->getResumeThreeDSecureTwoBuilder($paymentResult['receiptId'])
+            ->setThreeDSecureTwoMethodCompletion("Yes")
+            ->setThreeDSecureTwoPrimaryAccountDetails($primaryAccountDetailsFields)
+            ->build(ConfigHelper::getSafeChargeConfig());
+
+        Assert::assertNotNull($resumeThreeDSecureTwo);
+
+        try {
+            $resumeResult = $resumeThreeDSecureTwo->update();
+            $this->fail('The request was expected to raise an exception.'); // We do not expect any exception
+        } catch (BadResponseException $e) {
+            // We do not expect any model exception because CV2 is not a mandatory request parameter
+            $this->fail('The request was expected to raise an ApiException.');
+        } catch (ApiException $e) {
+            // But we expect an API exception as this API key doesn't have optional CV2
+            $expected = "Sorry, the security code entered is invalid. Please check your details and try again.";
+            assert::assertEquals($expected, $e->getFieldErrors()[0]->getMessage());
+        }
+    }
+
     /*
      * This cannot run as a full automated test because of a step involving a web browser
      */
-    public function testPaymentWithThreedSecureTwoCompleteTransaction()
+    public function testPaymentWithThreeDSecureTwoCompleteTransaction()
     {
         // Build the Complete3d request for the payment after its ACS challenge happened
         $completeThreeDSecureTwo = $this->getCompleteThreeDSecureTwoBuilder('12345678')
@@ -225,7 +278,8 @@ abstract class ThreeDSecureTwoTests extends PaymentTests
     {
         // Build a threeDSecureTwo payment
         $threeDSecureTwo = array(
-            'authenticationSource'      => "Browser"
+            'authenticationSource'      => "Browser",
+            'challengeRequestIndicator' => "NoPreference"
         );
 
         // Using a cardholder name that results in no device details or challenge call

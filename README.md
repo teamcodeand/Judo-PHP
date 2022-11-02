@@ -1,9 +1,9 @@
 # Judopay PHP SDK [![Build Status](https://travis-ci.org/Judopay/Judo-PHP.svg?branch=master)](https://travis-ci.org/Judopay/Judo-PHP)
-The JudoPay SDK provides you with ability to integrate card payments into your PHP project. Judo's SDK enables a faster, simpler and more secure payment experience within your app.
+The JudoPay SDK provides you with the ability to integrate card payments into your PHP project. Judo's SDK enables a faster, simpler, and more secure payment experience within your app.
 ##### **\*\*\*Due to industry-wide security updates, versions below 2.0 of this SDK will no longer be supported after 1st Oct 2016. For more information regarding these updates, please read our blog [here](http://hub.judopay.com/pci31-security-updates/).*****
 
 ## Requirements
-For the Judo PHP library in order to work correctly with your developer setup, please ensure the following requirements are met:
+In order for the Judo PHP library to work correctly with your development setup, please ensure the following requirements are met:
 
 - PHP 5.5 and above
 - [Composer](https://getcomposer.org/download/)
@@ -54,7 +54,7 @@ To make a new payment with full card details:
 ```
 **Note:** Please make sure that you are using a unique Consumer Reference for each different consumer, and a unique Payment Reference for each transaction.
 
-Card address details can optionally be included for use in AVS checks as follows, (see full list of parameters [here](https://docs.judopay.com/#register-a-card))
+Card address details can optionally be included for use in AVS checks as follows, (see full list of parameters [here](https://docs.judopay.com/Content/Server%20SDKs/Server%20SDKs_1.htm#Server))
 
 ```php
     $payment = $judopay->getModel('Payment');
@@ -73,14 +73,14 @@ Card address details can optionally be included for use in AVS checks as follows
     );
 ```
 
-You can check on the required fields and the format of each field in the [Judopay REST API reference](https://docs.judopay.com/api/index.html).
+You can check on the required fields and the format of each field in the [Judopay REST API reference](https://docs.judopay.com/api-reference/index.html).
 To send the request to the API, call:
 ```php
     $response = $payment->create();
 ```
 
 ##### 4. Check the payment result
-If the payment is successful, you'll receive a response array like this (see full response [here](https://docs.judopay.com/#card-payment)):
+If the payment is successful, you'll receive a response array like this (see full response [here](https://docs.judopay.com/Content/Server%20SDKs/Server%20SDKs_1.htm#Server)):
 ```php
     Array
     (
@@ -94,12 +94,12 @@ If the payment is successful, you'll receive a response array like this (see ful
         [yourPaymentReference] => 12345
     )
 ```
-Also important to handle different exceptions in your code. See more details in our [error handling section](https://github.com/JudoPay/PhpSdk/wiki/Error-handling). 
+Also important to handle different exceptions in your code. See more details in our [error handling section](https://docs.judopay.com/Content/Sandbox%20Testing/Test%20Scenarios.htm).
 ```php
     try {
         $response = $payment->create();
         if ($response['result'] === 'Success') {
-            echo 'Payment succesful';
+            echo 'Payment successful';
         } else {
             echo 'There were some problems while processing your payment';
         }
@@ -113,7 +113,7 @@ Also important to handle different exceptions in your code. See more details in 
 ```
 
 ## Next steps
-The judo PHP SDK supports a range of customization options. For more information on using judo see our [documentation](https://docs.judopay.com/#php) or [wiki documentation](https://github.com/JudoPay/PhpSdk/wiki). 
+The Judo PHP SDK supports a range of customization options. For more information on using Judo see our [documentation](https://docs.judopay.com/Content/Server%20SDKs/Server%20SDKs_1.htm#Server). 
 
 ## License
 See the [LICENSE](https://github.com/JudoPay/PhpSdk/blob/master/LICENSE.txt) file for license rights and limitations (MIT).
